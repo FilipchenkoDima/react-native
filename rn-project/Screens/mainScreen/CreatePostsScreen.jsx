@@ -119,11 +119,11 @@ export const CreatePostsScreen = ({ navigation }) => {
             style={{ marginTop: 8, marginBottom: 48 }}
             activeOpacity={0.7}
           >
-            <Text style={styles.text}>"Загрузить фото"</Text>
+            <Text style={styles.text}>"Завантажте фото"</Text>
           </TouchableOpacity>
           <View style={styles.inputWrap}>
             <TextInput
-              placeholder="Название"
+              placeholder="Назва..."
               value={photoTitle}
               style={styles.input}
               onFocus={trackingFocus}
@@ -138,7 +138,7 @@ export const CreatePostsScreen = ({ navigation }) => {
             }}
           >
             <TextInput
-              placeholder="Местность"
+              placeholder="Місцевість..."
               value={place}
               style={{
                 ...styles.input,
@@ -169,7 +169,7 @@ export const CreatePostsScreen = ({ navigation }) => {
                 color: checking ? "#FFFFFF" : "#BDBDBD",
               }}
             >
-              Опубликовать
+              Опубліковати
             </Text>
           </TouchableOpacity>
         </>
