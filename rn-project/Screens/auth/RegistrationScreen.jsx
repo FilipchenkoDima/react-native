@@ -31,7 +31,7 @@ const loadApplication = async () => {
   });
 };
 
-export default function LoginScreen() {
+export default function RegistrationScreen({ navigation }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [inFocus, setInFocus] = useState(false);
   const [state, setState] = useState(initialState);
@@ -44,7 +44,7 @@ export default function LoginScreen() {
   useEffect(() => {
     const onChange = () => {
       const width = Dimensions.get("window").width - 20 * 2;
-      console.log("width", width);
+
       setDimensions(width);
     };
     Dimensions.addEventListener("change", onChange);
@@ -56,8 +56,8 @@ export default function LoginScreen() {
   const keyboardHide = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
-    console.log(state);
     setState(initialState);
+    navigation.navigate("Home", { ...state });
   };
 
   useEffect(() => {
@@ -95,13 +95,36 @@ export default function LoginScreen() {
           source={require("../../assets/images/photo-bg.jpg")}
         >
           <View
-            style={{ ...styles.form, marginBottom: isShowKeyboard ? 100 : 0 }}
+            style={{ ...styles.form, marginBottom: isShowKeyboard ? 120 : 0 }}
           >
             <KeyboardAvoidingView
               behavior={Platform.OS == "ios" ? "padding" : "height"}
             >
+              {!isShowKeyboard ? (
+                <View style={styles.avatar}></View>
+              ) : (
+                <Image
+                  source={require("../../assets/images/rectangle.png")}
+                  style={{
+                    ...styles.addImg,
+                  }}
+                />
+              )}
               <View style={styles.header}>
-                <Text style={styles.headerTitle}>Увійти</Text>
+                <Text style={styles.headerTitle}>Реєстрація</Text>
+              </View>
+              <View>
+                <TextInput
+                  style={styles.input}
+                  // textAlign={"center"}
+                  placeholder="Логін"
+                  placeholderTextColor="#BDBDBD"
+                  onFocus={() => setIsShowKeyboard(true)}
+                  value={state.login}
+                  onChangeText={(value) =>
+                    setState((prevState) => ({ ...prevState, login: value }))
+                  }
+                />
               </View>
               <View style={{ marginTop: 16 }}>
                 <TextInput
@@ -135,12 +158,13 @@ export default function LoginScreen() {
                 style={styles.btn}
                 onPress={keyboardHide}
               >
-                <Text style={styles.btnTitle}>Увійти</Text>
+                <Text style={styles.btnTitle}>Зареєстуватися</Text>
               </TouchableOpacity>
-              <TouchableOpacity activeOpacity={0.8}>
-                <Text style={styles.loginText}>
-                  Немає акаунту? Зареєструватися
-                </Text>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("Login")}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.loginText}>Вже є акаунт? Увійти</Text>
               </TouchableOpacity>
             </KeyboardAvoidingView>
           </View>
@@ -167,8 +191,8 @@ const styles = StyleSheet.create({
     // alignItems: "center",
   },
   form: {
-    paddingTop: 32,
-    paddingBottom: 144,
+    paddingTop: 92,
+    paddingBottom: 78,
     paddingLeft: 16,
     paddingRight: 16,
     justifyContent: "center",
