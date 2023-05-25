@@ -16,7 +16,7 @@ export const HomeScreen = ({ navigation, route }) => {
   const [likes, setLikes] = useState(null);
   const isAvatarAdd = false;
 
-  console.log("HomeScreen :>> ", route);
+  const { email, login, password } = route.params;
 
   useEffect(() => {
     if (route.params) {
@@ -43,8 +43,8 @@ export const HomeScreen = ({ navigation, route }) => {
           />
         </View>
         <View style={styles.profileInfo}>
-          <Text style={styles.name}>example</Text>
-          <Text style={styles.email}>example@example.com</Text>
+          <Text style={styles.name}>{login !== "" ? login : "example"}</Text>
+          <Text style={styles.email}>{email}</Text>
         </View>
       </View>
       <FlatList

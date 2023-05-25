@@ -17,7 +17,6 @@ import { MapScreen } from "./MapScreen";
 const NestedScreen = createStackNavigator();
 
 export function PostsScreen({ navigation, route }) {
-  console.log("PostsScreen", route);
   return (
     <NestedScreen.Navigator>
       <NestedScreen.Screen

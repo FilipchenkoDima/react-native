@@ -9,7 +9,7 @@ export const CommentsScreen = ({ route, navigation }) => {
   //     setPosts((prevState) => [...prevState, route.params]);
   //   }
   // }, [route.params]);
-  let { params } = route.params;
+  const { params } = route.params;
 
   return (
     <View style={styles.container}>

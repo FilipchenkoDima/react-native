@@ -58,7 +58,10 @@ export default function LoginScreen({ navigation }) {
     Keyboard.dismiss();
 
     setState(initialState);
-    navigation.navigate("Home", { ...state });
+    navigation.navigate("Home", {
+      screen: "PostsScreen",
+      params: { screen: "HomeScreen", params: { ...state } },
+    });
   };
 
   useEffect(() => {

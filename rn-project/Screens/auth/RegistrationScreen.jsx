@@ -57,7 +57,10 @@ export default function RegistrationScreen({ navigation }) {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
     setState(initialState);
-    navigation.navigate("Home", { ...state });
+    navigation.navigate("Home", {
+      screen: "PostsScreen",
+      params: { screen: "HomeScreen", params: { ...state } },
+    });
   };
 
   useEffect(() => {
