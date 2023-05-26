@@ -9,11 +9,17 @@ import {
   TouchableWithoutFeedback,
   Image,
 } from "react-native";
+import { storage, db } from "../../firebase/config";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { collection, addDoc } from "firebase/firestore";
 import { MaterialIcons, Feather } from "@expo/vector-icons";
-import { Camera, CameraType } from "expo-camera";
+import { Camera } from "expo-camera";
 import * as Location from "expo-location";
+import { useSelector } from "react-redux";
+const { v4: uuidv4 } = require("uuid");
+import { selectUserId, selectLogin } from "../../redux/selectors";
 
-export const CreatePostsScreen = ({ navigation }) => {
+export default function CreatePostsScreen({ navigation }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [snap, setSnap] = useState(null);
   const [photo, setPhoto] = useState(null);
@@ -23,16 +29,19 @@ export const CreatePostsScreen = ({ navigation }) => {
   const [place, setPlace] = useState("");
   const [checking, setChecking] = useState(false);
 
+  const userId = useSelector(selectUserId);
+
+  const login = useSelector(selectLogin);
+
   useEffect(() => {
     (async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
-      // setHasPermission(status === "granted");
     })();
   }, []);
 
   useEffect(() => {
     (async () => {
-       const { status } = await Location.requestForegroundPermissionsAsync();
+      const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         console.log("Permission to access location was denied");
         return;
@@ -46,7 +55,6 @@ export const CreatePostsScreen = ({ navigation }) => {
   const takePhoto = async () => {
     const photo = await snap.takePictureAsync();
     const location = await Location.getCurrentPositionAsync();
-    // console.log(location);
     setPhoto(photo.uri);
     setLocation(location.coords);
     checkingInputs();
@@ -55,20 +63,6 @@ export const CreatePostsScreen = ({ navigation }) => {
     if (photo && location && photoTitle && place) {
       setChecking(true);
     }
-  };
-
-  const sendPhoto = () => {
-    // if (checking) {
-    navigation.navigate("HomeScreen", {
-      photo,
-      location,
-      photoTitle,
-      place,
-    });
-    resetData();
-    // } else {
-    //   alert("не все поля заполнены");
-    // }
   };
 
   const resetData = () => {
@@ -96,6 +90,46 @@ export const CreatePostsScreen = ({ navigation }) => {
     setPlace(value);
     checkingInputs();
     return;
+  };
+
+  const uploadPhotoToServer = async () => {
+    const response = await fetch(photo);
+
+    const file = await response.blob();
+
+    const photoId = uuidv4();
+    const storageRef = ref(storage, `postImage/${photoId}`);
+    await uploadBytes(storageRef, file);
+
+    const photoUrl = await getDownloadURL(ref(storage, `postImage/${photoId}`));
+    return photoUrl;
+  };
+
+  const uploadPostToServer = async () => {
+    const photo = await uploadPhotoToServer();
+
+    try {
+      const docRef = await addDoc(collection(db, "posts"), {
+        userId,
+        login,
+        location,
+        photo,
+        photoTitle,
+      });
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  };
+
+  const sendPhoto = () => {
+    uploadPostToServer();
+    navigation.navigate("HomeScreen", {
+      photo,
+      location,
+      photoTitle,
+      place,
+    });
+    resetData();
   };
 
   return (
@@ -155,7 +189,6 @@ export const CreatePostsScreen = ({ navigation }) => {
             </TouchableOpacity>
           </View>
           <TouchableOpacity
-            // disabled={checking}
             onPress={sendPhoto}
             activeOpacity={0.7}
             style={{
@@ -179,7 +212,7 @@ export const CreatePostsScreen = ({ navigation }) => {
       </View>
     </TouchableWithoutFeedback>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -210,14 +243,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  // camera2: {
-  //   flex: 1,
-  //   height: 50,
-  //   width: 50,
-  //   backgroundColor: "#F6F6F6",
-  //   // justifyContent: "center",
-  //   // alignItems: "center",
-  // },
+
   cameraBtn: {
     width: 60,
     height: 60,
@@ -263,11 +289,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 19,
     textAlign: "center",
-    // padding: 10,
   },
   buttonSubmit: {
     borderRadius: 100,
     paddingVertical: 16,
-    // marginBottom: 32,
   },
 });

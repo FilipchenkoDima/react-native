@@ -1,14 +1,7 @@
 import { View, Text, StyleSheet, Image } from "react-native";
 import { useEffect, useState } from "react";
 
-export const CommentsScreen = ({ route, navigation }) => {
-  // const [posts, setPosts] = useState([]);
-
-  // useEffect(() => {
-  //   if (route.params) {
-  //     setPosts((prevState) => [...prevState, route.params]);
-  //   }
-  // }, [route.params]);
+export const CommentsScreen = ({ route }) => {
   const { params } = route.params;
 
   return (

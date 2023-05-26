@@ -10,27 +10,25 @@ import {
 import { AntDesign } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { selectEmail, selectLogin } from "../../redux/selectors";
 
 export const HomeScreen = ({ navigation, route }) => {
   const [posts, setPosts] = useState([]);
   const [likes, setLikes] = useState(null);
   const isAvatarAdd = false;
 
-  const { email, login, password } = route.params;
+  const login = useSelector(selectLogin);
+  const email = useSelector(selectEmail);
 
   useEffect(() => {
     if (route.params) {
       setPosts((prevState) => [...prevState, route.params]);
-      // console.log(route.key);
     }
-  }, [route.params]);
+  }, [route]);
 
   const onLikes = () => {
     setLikes((prevState) => prevState + 1);
-  };
-
-  const sendInfoToComments = () => {
-    navigation.navigate("Comments", route);
   };
 
   return (
@@ -43,13 +41,13 @@ export const HomeScreen = ({ navigation, route }) => {
           />
         </View>
         <View style={styles.profileInfo}>
-          <Text style={styles.name}>{login !== "" ? login : "example"}</Text>
+          <Text style={styles.name}>{login}</Text>
           <Text style={styles.email}>{email}</Text>
         </View>
       </View>
       <FlatList
         data={posts}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(index) => index.toString()}
         renderItem={({ item }) => (
           <View style={{ marginBottom: 32 }}>
             {console.log(item.photo)}
@@ -66,7 +64,9 @@ export const HomeScreen = ({ navigation, route }) => {
                 <TouchableOpacity
                   style={{ ...styles.comments, marginRight: 24 }}
                   onPress={() => {
-                    navigation.navigate("Comments"), sendInfoToComments();
+                    navigation.navigate("Comments", {
+                      ...route,
+                    });
                   }}
                 >
                   <Feather

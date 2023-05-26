@@ -13,6 +13,9 @@ import {
   TouchableWithoutFeedback,
   Dimensions,
 } from "react-native";
+import { useDispatch } from "react-redux";
+
+import { authSignUpUser } from "../../redux/auth/authOperations";
 
 import * as SplashScreen from "expo-splash-screen";
 import * as Font from "expo-font";
@@ -41,26 +44,31 @@ export default function RegistrationScreen({ navigation }) {
     Dimensions.get("window").width - 20 * 2
   );
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
     const onChange = () => {
       const width = Dimensions.get("window").width - 20 * 2;
-
       setDimensions(width);
     };
     Dimensions.addEventListener("change", onChange);
-    return () => {
-      Dimensions.removeEventListener("change", onChange);
-    };
+    // return () => {
+    //   Dimensions.removeEventListener("change", onChange);
+    // };
   }, []);
 
-  const keyboardHide = () => {
+  const handleSubmit = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
     setState(initialState);
-    navigation.navigate("Home", {
-      screen: "PostsScreen",
-      params: { screen: "HomeScreen", params: { ...state } },
-    });
+
+    console.log("state", state);
+    dispatch(authSignUpUser(state));
+
+    // navigation.navigate("Home", {
+    //   screen: "PostsScreen",
+    //   params: { screen: "HomeScreen", params: { ...state } },
+    // });
   };
 
   useEffect(() => {
@@ -89,7 +97,7 @@ export default function RegistrationScreen({ navigation }) {
 
   return (
     <TouchableWithoutFeedback
-      onPress={keyboardHide}
+      onPress={handleSubmit}
       onLayout={onLayoutRootView}
     >
       <View style={styles.container}>
@@ -97,9 +105,7 @@ export default function RegistrationScreen({ navigation }) {
           style={styles.image}
           source={require("../../assets/images/photo-bg.jpg")}
         >
-          <View
-            style={{ ...styles.form, marginBottom: isShowKeyboard ? 120 : 0 }}
-          >
+          <View style={styles.form}>
             <KeyboardAvoidingView
               behavior={Platform.OS == "ios" ? "padding" : "height"}
             >
@@ -159,7 +165,7 @@ export default function RegistrationScreen({ navigation }) {
               <TouchableOpacity
                 activeOpacity={0.8}
                 style={styles.btn}
-                onPress={keyboardHide}
+                onPress={handleSubmit}
               >
                 <Text style={styles.btnTitle}>Зареєстуватися</Text>
               </TouchableOpacity>

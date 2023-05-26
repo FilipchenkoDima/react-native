@@ -4,7 +4,6 @@ import {
   Text,
   TextInput,
   StyleSheet,
-  Image,
   ImageBackground,
   TouchableOpacity,
   KeyboardAvoidingView,
@@ -16,6 +15,8 @@ import {
 
 import * as SplashScreen from "expo-splash-screen";
 import * as Font from "expo-font";
+import { useDispatch } from "react-redux";
+import { authSignInUser } from "../../redux/auth/authOperations";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -33,35 +34,25 @@ const loadApplication = async () => {
 
 export default function LoginScreen({ navigation }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
-  const [inFocus, setInFocus] = useState(false);
   const [state, setState] = useState(initialState);
   const [appIsReady, setAppIsReady] = useState(false);
-  const [isHiddenPassword, setIsHiddenPassword] = useState(true);
-  const [dimensions, setDimensions] = useState(
-    Dimensions.get("window").width - 20 * 2
-  );
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const onChange = () => {
       const width = Dimensions.get("window").width - 20 * 2;
-
-      setDimensions(width);
     };
     Dimensions.addEventListener("change", onChange);
-    return () => {
-      Dimensions.removeEventListener("change", onChange);
-    };
   }, []);
 
-  const keyboardHide = () => {
+  const handleSubmit = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
 
+    dispatch(authSignInUser(state));
+
     setState(initialState);
-    navigation.navigate("Home", {
-      screen: "PostsScreen",
-      params: { screen: "HomeScreen", params: { ...state } },
-    });
   };
 
   useEffect(() => {
@@ -90,7 +81,7 @@ export default function LoginScreen({ navigation }) {
 
   return (
     <TouchableWithoutFeedback
-      onPress={keyboardHide}
+      onPress={handleSubmit}
       onLayout={onLayoutRootView}
     >
       <View style={styles.container}>
@@ -137,7 +128,7 @@ export default function LoginScreen({ navigation }) {
               <TouchableOpacity
                 activeOpacity={0.8}
                 style={styles.btn}
-                onPress={keyboardHide}
+                onPress={handleSubmit}
               >
                 <Text style={styles.btnTitle}>Увійти</Text>
               </TouchableOpacity>
@@ -164,14 +155,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   image: {
-    // position: "relative",
-
     flex: 1,
     justifyContent: "flex-end",
 
     resizeMode: "contain",
-    // justifyContent: "center",
-    // alignItems: "center",
   },
   form: {
     paddingTop: 32,

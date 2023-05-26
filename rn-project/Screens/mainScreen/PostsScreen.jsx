@@ -13,10 +13,17 @@ import { Feather, Entypo } from "@expo/vector-icons";
 import { HomeScreen } from "./HomeScreen";
 import { CommentsScreen } from "./CommentsScreen";
 import { MapScreen } from "./MapScreen";
+import { useDispatch } from "react-redux";
+import { authSignOutUser } from "../../redux/auth/authOperations";
 
 const NestedScreen = createStackNavigator();
 
-export function PostsScreen({ navigation, route }) {
+export default function PostsScreen() {
+  const dispatch = useDispatch();
+  const signOut = () => {
+    dispatch(authSignOutUser());
+    console.log("Sign out succesful");
+  };
   return (
     <NestedScreen.Navigator>
       <NestedScreen.Screen
@@ -28,7 +35,7 @@ export function PostsScreen({ navigation, route }) {
             <TouchableOpacity
               style={{ marginRight: 10, marginBottom: 10 }}
               activeOpacity={0.7}
-              onPress={() => navigation.popToTop()}
+              onPress={signOut}
             >
               <Feather name="log-out" size={24} color="#BDBDBD" />
             </TouchableOpacity>
