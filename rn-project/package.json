@@ -35,7 +35,8 @@
     "react-native-screens": "~3.20.0",
     "react-native-web": "^0.18.12",
     "react-redux": "^8.0.5",
-    "uuidv4": "^6.2.13"
+    "uuidv4": "^6.2.13",
+    "expo-dev-client": "~2.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
